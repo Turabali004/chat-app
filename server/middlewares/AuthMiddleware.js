@@ -16,8 +16,8 @@
 const jwt = require("jsonwebtoken")
 
 module.exports = (req, res, next) => {
-  // Get token from header
-  const token = req.header("Authorization")?.replace("Bearer ", "")
+  // Get token from cookies first, then from header
+  let token = req.cookies?.jwt || req.header("Authorization")?.replace("Bearer ", "")
 
   // Check if no token
   if (!token) {
@@ -26,10 +26,10 @@ module.exports = (req, res, next) => {
 
   try {
     // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || "your_jwt_secret")
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
     // Add user from payload
-    req.user = decoded
+    req.userId = decoded.userId
     next()
   } catch (error) {
     res.status(401).json({ message: "Token is not valid" })

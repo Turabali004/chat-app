@@ -55,17 +55,18 @@ const cors = require("cors")
 const dotenv = require("dotenv")
 const socketIo = require("socket.io")
 const jwt = require("jsonwebtoken")
+const cookieParser = require("cookie-parser")
 
 // Load environment variables
 dotenv.config()
 
 // Import routes
-const authRoutes = require("./routes/auth")
-const userRoutes = require("./routes/users")
+const authRoutes = require("./routes/AuthRoutes")
+// const userRoutes = require("./routes/users")
 const messageRoutes = require("./routes/messages")
 
 // Import models
-const User = require("./models/User")
+const User = require("./models/UserModel")
 const Message = require("./models/Message")
 
 // Initialize Express app
@@ -73,8 +74,14 @@ const app = express()
 const server = http.createServer(app)
 
 // Middleware
-app.use(cors())
+app.use(cors({
+  origin: ["http://localhost:5173", "http://localhost:5174"], // Your frontend URLs
+  credentials: true, // Allow cookies and credentials
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}))
 app.use(express.json())
+app.use(cookieParser())
 
 // Connect to MongoDB
 mongoose
@@ -84,7 +91,7 @@ mongoose
 
 // Routes
 app.use("/api/auth", authRoutes)
-app.use("/api/users", userRoutes)
+// app.use("/api/users", userRoutes)
 app.use("/api/messages", messageRoutes)
 
 // Socket.io setup
@@ -185,4 +192,5 @@ io.on("connection", (socket) => {
 const PORT = process.env.PORT || 5000
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
+  console.log(`Socket.IO server ready for connections`)
 })

@@ -1,8 +1,12 @@
-import jwt from "jsonwebtoken";
-import { compare } from "bcryptjs";
+// import jwt from "jsonwebtoken";
+const jwt = require("jsonwebtoken");
+
+// import { compare } from "bcryptjs";
+const { compare } = require("bcryptjs");
 
 // models
-import User from "../models/UserModel.js";
+// import User from "../models/UserModel.js";
+const User = require("../models/UserModel.js");
 
 const maxAge = 3 * 24 * 60 * 60 * 1000;
 
@@ -12,28 +16,28 @@ const createToken = (email, userId) => {
   });
 };
 
-export const signup = async (req, res, next) => {
+const signup = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     console.log("email", email);
 
     if (!email || !password) {
-      return res.status(400).send("Email and password are required.");
+      return res.status(400).json({ message: "Email and password are required." });
     }
 
-    // const user = User.create({ email, password });
-    const user = await User.create({ email, password });
+    // check email is duplicate
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({ message: "Email already exists." });
+    }
 
-    // // check email is duplicate
-    // const existingUser = await User.findOne({ email });
-    // if (existingUser) {
-    //   return res.status(409).send("Email already exists.");
-    // }
+    const user = await User.create({ email, password });
 
     res.cookie("jwt", createToken(email, user._id), {
       maxAge,
-      secure: true,
-      sameSite: "None",
+      secure: false, // Set to false for localhost
+      sameSite: "Lax",
+      httpOnly: true,
     });
     return res.status(201).json({
       user: {
@@ -44,32 +48,33 @@ export const signup = async (req, res, next) => {
     });
   } catch (error) {
     console.log({ error });
-    return res.status(500).send("Internal Server Error");
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
-export const login = async (req, res, next) => {
+const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).send("Email and password are required.");
+      return res.status(400).json({ message: "Email and password are required." });
     }
 
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).send("User with the given email not found.");
+      return res.status(400).json({ message: "User with the given email not found." });
     }
 
     const auth = await compare(password, user.password);
     if (!auth) {
-      return res.status(400).send("Password is incorrect..");
+      return res.status(400).json({ message: "Password is incorrect." });
     }
     res.cookie("jwt", createToken(email, user._id), {
       maxAge,
-      secure: true,
-      sameSite: "None",
+      secure: false, // Set to false for localhost
+      sameSite: "Lax",
+      httpOnly: true,
     });
     return res.status(201).json({
       user: {
@@ -84,15 +89,15 @@ export const login = async (req, res, next) => {
     });
   } catch (error) {
     console.log({ error });
-    return res.status(500).send("Internal Server Error");
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
-export const getUserInfo = async (req, res, next) => {
+const getUserInfo = async (req, res, next) => {
   try {
-    const userData = await User.findById(requestAnimationFrame.userId);
+    const userData = await User.findById(req.userId);
     if (!userData) {
-      return res.status(404).send("User with the given id not found.");
+      return res.status(404).json({ message: "User with the given id not found." });
     }
 
     return res.status(200).json({
@@ -106,11 +111,11 @@ export const getUserInfo = async (req, res, next) => {
     });
   } catch (error) {
     console.log({ error });
-    return res.status(500).send("Internal Server Error");
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
-export const updateProfile = async (req, res) => {
+const updateProfile = async (req, res) => {
   try {
     const { userId } = req;
     const { firstName, lastName, color } = req.body;
@@ -120,7 +125,7 @@ export const updateProfile = async (req, res) => {
     if (!firstName || !lastName) {
       return res
         .status(400)
-        .send("Firstname, Lastname, and color are required.");
+        .json({ message: "Firstname, Lastname, and color are required." });
     }
     
     
@@ -153,4 +158,11 @@ export const updateProfile = async (req, res) => {
     console.error("Update profile error:", err);
     res.status(500).json({ message: "Internal server error" });
   }
+};
+
+module.exports = {
+  signup,
+  login,
+  getUserInfo,
+  updateProfile
 };

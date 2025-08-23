@@ -1,13 +1,14 @@
-import { Router } from "express";
 
 // Routes
-import { signup } from "../controllers/AuthController.js";
-import { login } from "../controllers/AuthController.js";
-import { getUserInfo } from "../controllers/AuthController.js";
-import { updateProfile } from "../controllers/AuthController.js";
+// import { Router } from "express";
+const { Router } = require("express");
+// import { signup, login, getUserInfo, updateProfile } from "../controllers/AuthController.js";
+const { signup, login, getUserInfo, updateProfile } = require("../controllers/AuthController.js");
 
 // Middle-Ware
-import { verifyToken } from "../middlewares/AuthMiddleware.js";
+// import { verifyToken } from "../middlewares/AuthMiddleware.js";
+const verifyToken = require("../middlewares/AuthMiddleware.js");
+
 
 
 
@@ -23,4 +24,4 @@ authRoutes.post("/update-profile", verifyToken, updateProfile)
 
 
 
-export default authRoutes;
+module.exports = authRoutes;

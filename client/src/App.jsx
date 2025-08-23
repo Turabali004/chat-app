@@ -13,27 +13,25 @@ import Profile from "./pages/Profile";
 // Zustand store
 import { useAppStore } from "./store";
 
+// API client
+import { apiClient } from "../lib/api-client";
+import { GET_USER_INFO } from "../utils/constants";
+
 const App = () => {
   const { userInfo, setUserInfo } = useAppStore();  
   const [loading, setLoading] = useState(true);  
   useEffect(() => {
     const checkAuth = async () => {
-      const token = sessionStorage.getItem("token");  // Check if the token exists in sessionStorage
+      try {
+        // Try to fetch user data using cookies (no need for token in sessionStorage)
+        const response = await apiClient.post(GET_USER_INFO);
 
-      if (token) {
-        // If token exists, try to fetch user data
-        try {
-          const response = await apiClient.get("/user/info", {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-
-          if (response.status === 200 && response.data.id) {
-            setUserInfo(response.data);  // Update userInfo if successful
-          }
-        } catch (error) {
-          console.error("Failed to fetch user data", error);
-          setUserInfo(null);  // If error, reset userInfo
+        if (response.status === 200 && response.data.id) {
+          setUserInfo(response.data);  // Update userInfo if successful
         }
+      } catch (error) {
+        console.error("Failed to fetch user data", error);
+        setUserInfo(null);  // If error, reset userInfo
       }
 
       setLoading(false);  // Stop loading after checking authentication

@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Input } from "@/components/ui/input";
+import { Input } from "../../components/ui/input";
 import { Avatar, AvatarImage } from "../../components/ui/avatar";
-import { ArrowLeft, Camera } from "react-feather";
+import { ArrowLeft, Camera, User, Mail, Palette, Upload, X, Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { IoMdArrowRoundBack } from "react-icons/io";
 import { useAppStore } from "../../store";
 import { colors, getColor } from "../../../lib/utils";
 import { FaTrash, FaPlus } from "react-icons/fa";
@@ -80,165 +79,193 @@ const Profile = () => {
   
 
   return (
-    <>
-      {/* <div className="min-h-screen bg-[#0f0f1a] flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-6">
-        <button className="text-white">
-          <ArrowLeft size={24} />
-        </button>
-
-        <div className="flex justify-center">
-          <div
-            className="relative w-24 h-24 rounded-full bg-pink-700 flex items-center justify-center text-3xl text-pink-100 shadow-lg overflow-hidden group cursor-pointer"
-            onClick={() => fileInputRef.current.click()}
-          >
-            {profileImage ? (
-              <img
-                src={profileImage}
-                alt="Profile"
-                className="object-cover w-full h-full"
-              />
-            ) : (
-              "K"
-            )}
-            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-              <Camera size={20} className="text-white" />
-            </div>
-            <input
-              type="file"
-              accept="image/*"
-              ref={fileInputRef}
-              className="hidden"
-              onChange={handleImageChange}
-            />
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <Input 
-            type="email" 
-            placeholder="asdfgh@gmail.com" 
-            className="bg-[#1c1c2a] text-white placeholder:text-gray-400 border-none focus:ring-2 focus:ring-pink-700"
-          />
-          <Input 
-            type="text" 
-            placeholder="First Name" 
-            className="bg-[#1c1c2a] text-white placeholder:text-gray-400 border-none focus:ring-2 focus:ring-pink-700"
-          />
-          <Input 
-            type="text" 
-            placeholder="Second Name" 
-            className="bg-[#1c1c2a] text-white placeholder:text-gray-400 border-none focus:ring-2 focus:ring-pink-700"
-          />
-        </div>
-
-        <div className="flex justify-center space-x-4 pt-2">
-          <div className="w-6 h-6 rounded-full bg-pink-700 border-2 border-white"></div>
-          <div className="w-6 h-6 rounded-full bg-yellow-400"></div>
-          <div className="w-6 h-6 rounded-full bg-green-400"></div>
-          <div className="w-6 h-6 rounded-full bg-cyan-400"></div>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-40 left-40 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
       </div>
-    </div> */}
-      <div className="bg-[#1b1c24] h-[100vh] flex items-center justify-center flex-col gap-10">
-        <div className="flex flex-col gap-10 w-[80vw] md:w-max">
-          <div>
-            <IoMdArrowRoundBack className="text-4xl lg:text-4xl text-white/90 cursor-pointer" />
-          </div>
-          <div className="grid grid-cols-2">
-            <div
-              className="h-full w-32 md:w-48 md:h-48 relative flex items-center justify-center "
-              onMouseEnter={() => setHovered(true)}
-              onMouseLeave={() => setHovered(false)}
+
+      <div className="relative min-h-screen flex items-center justify-center p-4">
+        <div className="w-full max-w-4xl">
+          {/* Header */}
+          <div className="flex items-center mb-8 animate-fadeInUp">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/chat")}
+              className="mr-4 hover:bg-white/10 dark:hover:bg-gray-800/10"
             >
-              <Avatar className="h-32 w-32 md:w-full md:h-full rounded-full overflow-hidden">
-                {image ? (
-                  <AvatarImage
-                    src={image}
-                    alt="profile"
-                    className="object-cover bg-black w-full h-full"
-                  />
-                ) : (
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+              Complete Your Profile
+            </h1>
+          </div>
+
+          {/* Main Profile Card */}
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-3xl shadow-2xl p-8 border border-gray-200/50 dark:border-gray-700/50 animate-fadeInUp">
+            <div className="grid lg:grid-cols-2 gap-8 items-center">
+              {/* Profile Picture Section */}
+              <div className="flex flex-col items-center space-y-6">
+                <div className="relative group">
                   <div
-                    className={`uppercase relative h-32 md:w-full md:h-full text-5xl border-[1px] flex items-center justify-center rounded-full text-white ${getColor(
-                      selectedColor
-                    )}`}
+                    className="w-48 h-48 relative flex items-center justify-center cursor-pointer transition-all duration-300 transform group-hover:scale-105"
+                    onMouseEnter={() => setHovered(true)}
+                    onMouseLeave={() => setHovered(false)}
                   >
-                    {firstName
-                      ? firstName.split("")[0]
-                      : userInfo.email.split("")[0]}
+                    <Avatar className="w-full h-full rounded-full border-4 border-white shadow-xl">
+                      {image ? (
+                        <AvatarImage
+                          src={image}
+                          alt="profile"
+                          className="object-cover w-full h-full"
+                        />
+                      ) : (
+                        <div
+                          className={`w-full h-full text-6xl font-bold flex items-center justify-center rounded-full text-white ${getColor(
+                            selectedColor
+                          )}`}
+                        >
+                          {firstName
+                            ? firstName[0].toUpperCase()
+                            : userInfo.email[0].toUpperCase()}
+                        </div>
+                      )}
+                    </Avatar>
+                    
+                    {/* Hover Overlay */}
+                    <div className={`absolute inset-0 bg-black/50 rounded-full flex items-center justify-center transition-opacity duration-300 ${hovered ? 'opacity-100' : 'opacity-0'}`}>
+                      {image ? (
+                        <div className="flex flex-col items-center space-y-2">
+                          <FaTrash className="text-white text-2xl" />
+                          <span className="text-white text-sm">Remove</span>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center space-y-2">
+                          <Upload className="text-white w-8 h-8" />
+                          <span className="text-white text-sm">Upload Photo</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                )}
-              </Avatar>
-              {hovered && (
-                <div className=" absolute inset-0 top-0 w-full h-full flex items-center justify-center bg-black/50 ring-fuchsia-50 rounded-full">
-                  {image ? (
-                    <FaTrash className="text-white text-3xl cursor-pointer" />
-                  ) : (
-                    <FaPlus className="text-white text-3xl cursor-pointer" />
-                  )}
                 </div>
-              )}
-            </div>
-            <div className="flex min-w-32 md:min-w-64 flex-col gap-5 text-white items-center justify-center">
-              <div className="w-full">
-                <Input
-                  placeholder="Email"
-                  type="email"
-                  disabled
-                  value={userInfo.email}
-                  className="rounded-ld p-6 bg-[#2c2e3b] border-none "
-                />
-              </div>
-              <div className="w-full">
-                <Input
-                  placeholder="First Name"
-                  type="text"
-                  onChange={(e) => setFirstName(e.target.value)}
-                  value={firstName}
-                  className="rounded-ld p-6 bg-[#2c2e3b] border-none "
-                />
-              </div>
-              <div className="w-full">
-                <Input
-                  placeholder="Second Name"
-                  type="text"
-                  onChange={(e) => setLastName(e.target.value)}
-                  value={lastName}
-                  className="rounded-ld p-6 bg-[#2c2e3b] border-none "
-                />
-              </div>
-              <div className="w-full flex gap-5">
-                {colors.map((color, index) => (
-                  <div
-                    className={`${color} h-8 w-8 rounded-full cursor-pointer transition-all duration-300
-                      ${
-                        selectedColor === index
-                          ? " outline-white/50 outline-1"
-                          : ""
-                      }
-                      
-                      `}
-                    key={index}
-                    onClick={() => setSelectedColor(index)}
-                  ></div>
-                ))}
+
+                {/* Color Picker */}
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-2 text-gray-700 dark:text-gray-300">
+                    <Palette className="w-5 h-5" />
+                    <span className="font-medium">Choose Avatar Color</span>
+                  </div>
+                  <div className="flex justify-center space-x-3">
+                    {colors.map((color, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setSelectedColor(index)}
+                        className={`w-10 h-10 rounded-full transition-all duration-300 transform hover:scale-110 ${color} ${
+                          selectedColor === index
+                            ? 'ring-4 ring-gray-300 ring-offset-2 scale-110'
+                            : 'hover:ring-2 hover:ring-gray-200 hover:ring-offset-1'
+                        }`}
+                      >
+                        {selectedColor === index && (
+                          <Check className="w-5 h-5 text-white mx-auto" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
-              <div className="w-full">
-                <Button
-                  className="h-16 w-full bg-purple-700 hover:bg-purple-900 transition-all duration-300"
-                  onClick={saveChanges}
-                  disabled={loading}
-                >
-                  {loading ? "Saving..." : "Save Changes"}
-                </Button>
+              {/* Form Section */}
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <Mail className="w-4 h-4" />
+                      <span>Email Address</span>
+                    </label>
+                    <Input
+                      type="email"
+                      value={userInfo.email}
+                      disabled
+                      className="h-12 bg-gray-100 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-500 cursor-not-allowed"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <User className="w-4 h-4" />
+                      <span>First Name</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter your first name"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      className="h-12 bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <User className="w-4 h-4" />
+                      <span>Last Name</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Enter your last name"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      className="h-12 bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex space-x-4 pt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate("/auth")}
+                    className="flex-1 h-12 border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={saveChanges}
+                    disabled={loading || !firstName.trim() || !lastName.trim()}
+                    className="flex-1 h-12 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium transition-all duration-200"
+                  >
+                    {loading ? (
+                      <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>Saving...</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center space-x-2">
+                        <Check className="w-4 h-4" />
+                        <span>Complete Profile</span>
+                      </div>
+                    )}
+                  </Button>
+                </div>
+
+                {/* Progress Indicator */}
+                <div className="mt-6 p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-200 dark:border-indigo-800">
+                  <div className="flex items-center space-x-2 text-indigo-700 dark:text-indigo-300">
+                    <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm font-medium">
+                      You're one step away from joining the conversation!
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

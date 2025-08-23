@@ -1,5 +1,8 @@
-import mongoose from "mongoose";
-import { genSalt, hash } from "bcryptjs";
+// import mongoose from "mongoose";
+const mongoose = require("mongoose");
+// import { genSalt, hash } from "bcryptjs";
+const { genSalt, hash } = require("bcryptjs");
+// import { genSalt, hash } from "bcryptjs";
 
 const UserSchema = new mongoose.Schema({
   firstName: { 
@@ -41,4 +44,4 @@ UserSchema.pre("save", async function (next) {
 
 
 const User = mongoose.model("User", UserSchema)
-export default User;
+module.exports = User;
