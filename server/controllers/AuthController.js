@@ -44,6 +44,11 @@ const signup = async (req, res, next) => {
         id: user.id,
         email: user.email,
         profileSetup: user.profileSetup,
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        image: user.image,
+        color: user.color,
       },
     });
   } catch (error) {
@@ -81,6 +86,7 @@ const login = async (req, res, next) => {
         id: user.id,
         email: user.email,
         profileSetup: user.profileSetup,
+        username: user.username,
         firstName: user.firstName,
         lastName: user.lastName,
         image: user.image,
@@ -104,6 +110,7 @@ const getUserInfo = async (req, res, next) => {
       id: userData.id,
       email: userData.email,
       profileSetup: userData.profileSetup,
+      username: userData.username,
       firstName: userData.firstName,
       lastName: userData.lastName,
       image: userData.image,
@@ -118,28 +125,35 @@ const getUserInfo = async (req, res, next) => {
 const updateProfile = async (req, res) => {
   try {
     const { userId } = req;
-    const { firstName, lastName, color } = req.body;
+    const { firstName, lastName, color, username } = req.body;
     console.log("firstName:", firstName)
-
 
     if (!firstName || !lastName) {
       return res
         .status(400)
         .json({ message: "Firstname, Lastname, and color are required." });
     }
-    
-    
 
-    const userData = await User.findByIdAndUpdate(
-      userId,
-      {
-        firstName,
-        lastName,
-        color,
-        profileSetup: true,
-      },
-      { new: true }
-    );
+    if (username && typeof username === "string") {
+      const uname = username.trim().toLowerCase();
+      if (!/^[a-z0-9_\.]{3,20}$/.test(uname)) {
+        return res.status(400).json({ message: "Username must be 3-20 chars, letters/numbers/._ only." });
+      }
+      const exists = await User.findOne({ username: uname, _id: { $ne: userId } });
+      if (exists) {
+        return res.status(409).json({ message: "Username already taken." });
+      }
+    }
+
+    const update = {
+      firstName,
+      lastName,
+      color,
+      profileSetup: true,
+    };
+    if (username && username.trim()) update.username = username.trim().toLowerCase();
+
+    const userData = await User.findByIdAndUpdate(userId, update, { new: true });
 
     if (!userData) {
       return res.status(404).json({ message: "User not found" });
@@ -148,6 +162,7 @@ const updateProfile = async (req, res) => {
     return res.status(200).json({
       id: userData.id,
       email: userData.email,
+      username: userData.username,
       firstName: userData.firstName,
       lastName: userData.lastName,
       color: userData.color,

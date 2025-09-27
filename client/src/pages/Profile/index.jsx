@@ -20,12 +20,15 @@ const Profile = () => {
   const [hovered, setHovered] = useState(false);
   const [selectedColor, setSelectedColor] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState("");
+  const [usernameError, setUsernameError] = useState("");
 
   useEffect(() => {
     if(userInfo.profileSetup){
       setFirstName(userInfo.firstName)
       setLastName(userInfo.lastName)
       setSelectedColor(userInfo.color)
+      setUsername(userInfo.username || "")
     }
   }, [userInfo])
   
@@ -49,6 +52,11 @@ const Profile = () => {
       toast.error("Last Name is required");
       return false;
     }
+    if (username && !/^[a-z0-9_\.]{3,20}$/.test(username)) {
+      setUsernameError("3-20 chars. Use letters, numbers, _ or .");
+      return false;
+    }
+    setUsernameError("");
     return true;
   };
   const saveChanges = async () => {
@@ -58,7 +66,7 @@ const Profile = () => {
     try {
       const response = await apiClient.post(
         UPDATE_PROFILE_ROUTE,
-        { firstName, lastName, color: selectedColor },
+        { firstName, lastName, color: selectedColor, username: username?.trim() || undefined },
         { withCredentials: true }
       );
   
@@ -220,6 +228,23 @@ const Profile = () => {
                       onChange={(e) => setLastName(e.target.value)}
                       className="h-12 bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500"
                     />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <User className="w-4 h-4" />
+                      <span>Username</span>
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Choose a unique username (e.g. john_doe)"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      className={`h-12 bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500 ${usernameError ? 'border-red-500' : ''}`}
+                    />
+                    {usernameError && (
+                      <p className="text-xs text-red-500">{usernameError}</p>
+                    )}
                   </div>
                 </div>
 

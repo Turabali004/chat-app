@@ -86,7 +86,35 @@ app.use(cookieParser())
 // Connect to MongoDB
 mongoose
   .connect(process.env.MONGO_URI || "mongodb://localhost:27017/discord-chat")
-  .then(() => console.log("MongoDB connected"))
+  .then(async () => {
+    console.log("MongoDB connected");
+
+    // One-time index cleanup: drop old unique index on participants if it exists
+    try {
+      const DMThread = require("./models/DMThread");
+      const dmCollection = mongoose.connection.collection("dmthreads");
+      const indexes = await dmCollection.indexes();
+      const hasParticipantsUnique = indexes.some(
+        (idx) => idx.name === "participants_1" && idx.unique
+      );
+      if (hasParticipantsUnique) {
+        console.log("Dropping old unique index participants_1 on dmthreads...");
+        await dmCollection.dropIndex("participants_1");
+      }
+
+      // Backfill missing pairKey for existing threads
+      const missingPairKey = await DMThread.find({ $or: [{ pairKey: { $exists: false } }, { pairKey: null }] });
+      for (const t of missingPairKey) {
+        if (Array.isArray(t.participants) && t.participants.length === 2) {
+          const sorted = t.participants.map((id) => id.toString()).sort();
+          t.pairKey = `${sorted[0]}-${sorted[1]}`;
+          await t.save();
+        }
+      }
+    } catch (e) {
+      console.warn("Index cleanup warning:", e?.message || e);
+    }
+  })
   .catch((err) => console.error("MongoDB connection error:", err))
 
 // Routes

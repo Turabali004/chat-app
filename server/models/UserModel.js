@@ -13,6 +13,14 @@ const UserSchema = new mongoose.Schema({
     type: String, 
     required: false, 
   },
+  // New: unique username for discovery
+  username: {
+    type: String,
+    unique: true,
+    sparse: true, // allow users without username
+    trim: true,
+    lowercase: true,
+  },
   email: { 
     type: String, 
     required: [true, "Email is Required."], 
@@ -41,7 +49,6 @@ UserSchema.pre("save", async function (next) {
   this.password = await hash(this.password, salt);
   next();
 })
-
 
 const User = mongoose.model("User", UserSchema)
 module.exports = User;

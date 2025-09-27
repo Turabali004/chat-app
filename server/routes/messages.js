@@ -3,8 +3,12 @@ const {
   getMessages,
   sendMessage,
   getContacts,
+  getRequests,
+  acceptRequest,
+  rejectRequest,
   markMessageAsRead,
-  getAllUsers
+  getAllUsers,
+  findUserByUsername,
 } = require("../controllers/MessageController");
 const verifyToken = require("../middlewares/AuthMiddleware");
 
@@ -13,19 +17,25 @@ const messageRoutes = Router();
 // All routes require authentication
 messageRoutes.use(verifyToken);
 
-// Get messages between current user and another user
+// Messages between current user and another user
 messageRoutes.post("/get-messages", getMessages);
 
-// Send a new message
+// Send a new message (creates/updates thread)
 messageRoutes.post("/send-message", sendMessage);
 
-// Get contacts (users you've messaged with)
+// Accepted contacts
 messageRoutes.get("/contacts", getContacts);
 
-// Get all users for contact search
-messageRoutes.get("/all-users", getAllUsers);
+// Message requests
+messageRoutes.get("/requests", getRequests);
+messageRoutes.post("/requests/:threadId/accept", acceptRequest);
+messageRoutes.post("/requests/:threadId/reject", rejectRequest);
 
-// Mark message as read
+// Search users
+messageRoutes.get("/all-users", getAllUsers);
+messageRoutes.get("/find-by-username", findUserByUsername);
+
+// Read receipts
 messageRoutes.patch("/mark-read/:messageId", markMessageAsRead);
 
 module.exports = messageRoutes;
